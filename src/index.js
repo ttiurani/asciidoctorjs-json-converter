@@ -9,7 +9,16 @@ function JsonConverter(Asciidoctor) {
 
         $convert(node, _transform = null, _opts = {}) {
             if (node.getNodeName() === 'document') {
+                node.setAttribute('images', []);
+                node.getContent();
                 return JSON.stringify(node.getAttributes());
+            } else if (node.getNodeName() === 'section') {
+                node.getContent();
+            } else if (node.getNodeName() === 'image') {
+                const title = node.getTitle();
+                const alt = node.getAttributes()['alt'];
+                const target = node.getAttributes()['target'];
+                node.getDocument().getAttributes()['images'].push({title, alt, target});
             }
             return '';
         }
