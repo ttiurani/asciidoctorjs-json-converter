@@ -1,2 +1,3 @@
-# asciidoctorjs-json-converter
-Asciidoc.js JSON Metadata Converter
+# asciidoctorjs-gemini-converter
+
+Asciidoctor.js Gemini custom converter
