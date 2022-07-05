@@ -10,16 +10,33 @@ function JsonConverter(Asciidoctor) {
         $convert(node, _transform = null, _opts = {}) {
             if (node.getNodeName() === 'document') {
                 node.setAttribute('images', []);
+                const extractId = node.getDocument().getAttributes()['extract-id'];
+                if (extractId) {
+                   node.setAttribute(extractId, []);
+                }
                 node.getContent();
                 return JSON.stringify(node.getAttributes());
             } else if (node.getNodeName() === 'section') {
+                node.getContent();
+            } else if (node.getNodeName() === 'preamble') {
                 node.getContent();
             } else if (node.getNodeName() === 'image') {
                 const title = node.getTitle();
                 const alt = node.getAttributes()['alt'];
                 const target = node.getAttributes()['target'];
                 node.getDocument().getAttributes()['images'].push({title, alt, target});
+            } else if (node.getNodeName() === 'paragraph') {
+                node.getContent();
+            } else if (node.getNodeName() === 'inline_quoted') {
+                const extractId = node.getDocument().getAttributes()['extract-id'];
+                if (extractId) {
+                    const id = node.getId();
+                    if (id && id.toString && id.toString() === extractId) {
+                       node.getDocument().getAttributes()[extractId].push(node.getText());
+                    }
+                }
             }
+
             return '';
         }
     }
