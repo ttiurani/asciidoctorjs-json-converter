@@ -12,10 +12,18 @@ function JsonConverter(Asciidoctor) {
                 node.setAttribute('images', []);
                 const extractId = node.getDocument().getAttributes()['extract-id'];
                 if (extractId) {
-                   node.setAttribute(extractId, []);
+                    node.setAttribute(extractId, []);
                 }
                 node.getContent();
-                return JSON.stringify(node.getAttributes());
+                let attributes = node.getAttributes();
+                const titleSeparator = (attributes['title-separator'] || ':') + ' ';
+                const doctitle = attributes['doctitle'];
+                const subtitleIndex = doctitle.lastIndexOf(titleSeparator);
+                if (subtitleIndex > 0) {
+                    attributes['doctitle'] = doctitle.substring(0, subtitleIndex);
+                    attributes['docsubtitle'] = doctitle.substring(subtitleIndex + titleSeparator.length);
+                }
+                return JSON.stringify(attributes);
             } else if (node.getNodeName() === 'section') {
                 node.getContent();
             } else if (node.getNodeName() === 'preamble') {
@@ -32,7 +40,7 @@ function JsonConverter(Asciidoctor) {
                 if (extractId) {
                     const id = node.getId();
                     if (id && id.toString && id.toString() === extractId) {
-                       node.getDocument().getAttributes()[extractId].push(node.getText());
+                        node.getDocument().getAttributes()[extractId].push(node.getText());
                     }
                 }
             }
